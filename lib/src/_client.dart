@@ -281,6 +281,7 @@ class Client {
     Map? suggest,
     List<Map>? sort,
     Map? aggregations,
+    Map? collapse,
     Duration? scroll,
     HighlightOptions? highlight,
     bool? trackTotalHits,
@@ -303,6 +304,7 @@ class Client {
       if (suggest != null) 'suggest': suggest,
       if (sort != null) 'sort': sort,
       if (aggregations != null) 'aggregations': aggregations,
+      if (collapse != null) 'collapse': collapse,
       if (highlight != null) 'highlight': highlight.toMap(),
       if (trackTotalHits != null) 'track_total_hits': trackTotalHits,
       if (size != null) 'size': size,
@@ -379,21 +381,19 @@ class Client {
     ];
 
     final map = {
-      'field': field ,
+      'field': field,
       if (string != null) 'string': string,
       if (caseInsensitive != null) 'case_insensitive': caseInsensitive,
       if (size != null) 'size': size,
     };
-    final rs = await _transport
-        .send(Request('POST', path, bodyMap: map));
+    final rs = await _transport.send(Request('POST', path, bodyMap: map));
     rs.throwIfStatusNotOK(message: 'Failed to retrieve term enum for $field.');
     final body = rs.bodyAsMap;
 
-    final termsResults = (body['terms']?.whereType<String>()?.toList() ?? <String>[]) as List<String> ;
+    final termsResults = (body['terms']?.whereType<String>()?.toList() ??
+        <String>[]) as List<String>;
 
-    return TermsEnumResult(
-        termsResults
-    );
+    return TermsEnumResult(termsResults);
   }
 
   /// Continue search using the scroll API.
